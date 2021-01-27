@@ -3,8 +3,12 @@ Takes a Tenno Zone link from a file
 Gets the items you have selected
 Shows the price of the items from warframe.market'''
 
+import urllib.request
+import json
+import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+
 
 def get_tenno_url():
     '''Gets personal https://tenno.zone/planner/ URL from the text file'''
@@ -23,31 +27,93 @@ def get_item_list(url):
     print(f'Attempting to open {url} ...')
     opts = Options()
     opts.headless = True
-    browser = webdriver.Firefox(options=opts)
-    browser.get(url)
+	
+    try:
+        browser = webdriver.Firefox(options=opts)
+        browser.get(url)
+    except:
+        print(f'Error connecting to {url}')
+        item_names = []
+    else:
+        expand_checkbox = browser.find_element_by_xpath("//*[contains(text(), 'Include vaulted sets')]")
+        browser.execute_script("arguments[0].click();", expand_checkbox.find_element_by_tag_name('input'))
+        items = browser.find_elements_by_class_name('part-set')
+        print('Connected to tenno zone')
 
-    #Find the names of items with a selected checkbox
-    items = browser.find_elements_by_class_name('part-set-name')
-    for item in items:
-        checkbox = item.find_element_by_tag_name('input')
-        if checkbox.is_selected():
-            item_names.append(item.find_element_by_tag_name('span').get_attribute('innerHTML'))
-
-    browser.quit()
-    
+        for item in items:
+            parts = item.find_elements_by_tag_name('label')
+            for part in parts:
+                if part is parts[0]:
+                    item_name = part.text.title()
+                if part.find_element_by_tag_name('input').is_selected():
+                    if item_name != part.text.title():
+                        if part.text.title().find('Neuroptics') > -1:
+                            item_names.append(item_name + ' Neuroptics')
+                        elif part.text.title().find('Systems') > -1:
+                            item_names.append(item_name + ' Systems')
+                        elif part.text.title().find('Chassis') > -1:
+                            item_names.append(item_name + ' Chassis')
+                        else:
+                            item_names.append(item_name + ' ' + part.text.title())
+                                    
+                    else:
+                        item_names.append(item_name + ' Set')
+    finally:            
+        browser.quit()
+        
     return item_names
+
+def sub_list(orders, order_type='sell'):
+    '''Sorts the list and gets the 4 highest buy orders or 4 lowest sell orders'''
+    
+    if order_type == 'sell':
+        orders.sort()
+    else:
+        orders.sort(reverse=True)
+        
+    if len(orders) < 5:
+        return orders
+    else:
+        return orders[:4]
+
+
+api_url = 'https://api.warframe.market/v1/items/'
 
 tenno_url = get_tenno_url()
 items = get_item_list(tenno_url)
-print(items)
+print('Items Retrieved')
 
-name_file = open('name_list.txt', 'w')
 for item in items:
-    name_file.write(item + '\n')
-name_file.close()
+    print(item)
 
+    name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
+    url_item = api_url + name_url + '/orders'
+	
+    try:
+        json_url_item = urllib.request.urlopen(url_item)
+    except:
+        print(f'Item: {item} not found')
+        print('Kubrow Items not supported')
+    else:
+        data_item = json.loads(json_url_item.read())
+        payload_orders = data_item['payload']['orders']
+
+        sells_all = []
+        buys_all = []
+
+        for order in payload_orders:
+            if order['user']['status'] == 'ingame':
+                if order['order_type'] == 'buy':
+                    buys_all.append(order['platinum'])
+                if order['order_type'] == 'sell':
+                    sells_all.append(order['platinum'])
+
+        print('Selling:')
+        print(sub_list(sells_all))
+        print('Buying:')
+        print(sub_list(buys_all, 'buy'))
+        time.sleep(.5)
     
-
 
 
 
