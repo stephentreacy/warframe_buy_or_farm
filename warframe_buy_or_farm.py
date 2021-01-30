@@ -38,7 +38,7 @@ def get_item_list(url):
         expand_checkbox = browser.find_element_by_xpath("//*[contains(text(), 'Include vaulted sets')]")
         browser.execute_script("arguments[0].click();", expand_checkbox.find_element_by_tag_name('input'))
         items = browser.find_elements_by_class_name('part-set')
-        print('Connected to tenno zone')
+        print('Connected to tenno zone, retrieving items...')
 
         for item in items:
             parts = item.find_elements_by_tag_name('label')
@@ -77,43 +77,45 @@ def sub_list(orders, order_type='sell'):
         return orders[:4]
 
 
-api_url = 'https://api.warframe.market/v1/items/'
+if __name__ == '__main__':
+	api_url = 'https://api.warframe.market/v1/items/'
 
-tenno_url = get_tenno_url()
-items = get_item_list(tenno_url)
-print('Items Retrieved')
+	tenno_url = get_tenno_url()
+	items = get_item_list(tenno_url)
+	print('Items Retrieved')
 
-for item in items:
-    print(item)
 
-    name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
-    url_item = api_url + name_url + '/orders'
-	
-    try:
-        json_url_item = urllib.request.urlopen(url_item)
-    except:
-        print(f'Item: {item} not found')
-        print('Kubrow Items not supported')
-    else:
-        data_item = json.loads(json_url_item.read())
-        payload_orders = data_item['payload']['orders']
 
-        sells_all = []
-        buys_all = []
+	for item in items:
+		print(item)
 
-        for order in payload_orders:
-            if order['user']['status'] == 'ingame':
-                if order['order_type'] == 'buy':
-                    buys_all.append(order['platinum'])
-                if order['order_type'] == 'sell':
-                    sells_all.append(order['platinum'])
+		name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
+		url_item = api_url + name_url + '/orders'
+		
+		try:
+			json_url_item = urllib.request.urlopen(url_item)
+		except:
+			print(f'Item: {item} not found')
+			print('Kubrow Items not supported')
+		else:
+			data_item = json.loads(json_url_item.read())
+			payload_orders = data_item['payload']['orders']
 
-        print('Selling:')
-        print(sub_list(sells_all))
-        print('Buying:')
-        print(sub_list(buys_all, 'buy'))
-        time.sleep(.5)
-    
+			sells_all = []
+			buys_all = []
+
+			for order in payload_orders:
+				if order['user']['status'] == 'ingame':
+					if order['order_type'] == 'buy':
+						buys_all.append(order['platinum'])
+					if order['order_type'] == 'sell':
+						sells_all.append(order['platinum'])
+
+			print('Selling:')
+			print(sub_list(sells_all))
+			print('Buying:')
+			print(sub_list(buys_all, 'buy'))
+			time.sleep(.5)
 
 
 
