@@ -1,6 +1,6 @@
 '''Warframe Buy or Farm
 Takes a Tenno Zone link from a file
-Gets the items you have selected
+Gets the items selected via checkboxes on website
 Shows the price of the items from warframe.market'''
 
 import urllib.request
@@ -8,7 +8,6 @@ import json
 import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-
 
 def get_tenno_url():
     '''Gets personal https://tenno.zone/planner/ URL from the text file'''
@@ -54,14 +53,47 @@ def get_item_list(url):
                         elif part.text.title().find('Chassis') > -1:
                             item_names.append(item_name + ' Chassis')
                         else:
-                            item_names.append(item_name + ' ' + part.text.title())
-                                    
+                            item_names.append(item_name + ' ' + part.text.title())              
                     else:
                         item_names.append(item_name + ' Set')
     finally:            
         browser.quit()
         
     return item_names
+
+def get_market_prices(item):
+    '''Create a dictionary for item with the highest 4 buy orders and lowest 4 sell orders'''
+    
+    api_url = 'https://api.warframe.market/v1/items/'
+    name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
+    url_item = api_url + name_url + '/orders'
+    item_orders = {}
+    
+    try:
+        json_url_item = urllib.request.urlopen(url_item)          
+    except:
+        print(f'Item: {item} not found')
+        print('Kubrow Items not supported')
+    else:
+        data_item = json.loads(json_url_item.read())
+        payload_orders = data_item['payload']['orders']
+
+        sells_all = []
+        buys_all = []
+
+        for order in payload_orders:
+            if order['user']['status'] == 'ingame':
+                if order['order_type'] == 'buy':
+                    buys_all.append(order['platinum'])
+                if order['order_type'] == 'sell':
+                    sells_all.append(order['platinum'])
+
+        buying = sub_list(buys_all, 'buy')
+        selling = sub_list(sells_all)
+        time.sleep(.5)
+        item_orders[item] = [buying,selling]
+        
+        return item_orders
 
 def sub_list(orders, order_type='sell'):
     '''Sorts the list and gets the 4 highest buy orders or 4 lowest sell orders'''
@@ -78,44 +110,21 @@ def sub_list(orders, order_type='sell'):
 
 
 if __name__ == '__main__':
-	api_url = 'https://api.warframe.market/v1/items/'
+	
+    tenno_url = get_tenno_url()
+    items = get_item_list(tenno_url)
+    print('Items Retrieved')
+    item_orders = {}
+    for item in items:
+        item_dict = get_market_prices(item)
+        if item_dict:
+            item_orders.update(item_dict)
 
-	tenno_url = get_tenno_url()
-	items = get_item_list(tenno_url)
-	print('Items Retrieved')
+    print(item_orders)
 
-
-
-	for item in items:
-		print(item)
-
-		name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
-		url_item = api_url + name_url + '/orders'
-		
-		try:
-			json_url_item = urllib.request.urlopen(url_item)
-		except:
-			print(f'Item: {item} not found')
-			print('Kubrow Items not supported')
-		else:
-			data_item = json.loads(json_url_item.read())
-			payload_orders = data_item['payload']['orders']
-
-			sells_all = []
-			buys_all = []
-
-			for order in payload_orders:
-				if order['user']['status'] == 'ingame':
-					if order['order_type'] == 'buy':
-						buys_all.append(order['platinum'])
-					if order['order_type'] == 'sell':
-						sells_all.append(order['platinum'])
-
-			print('Selling:')
-			print(sub_list(sells_all))
-			print('Buying:')
-			print(sub_list(buys_all, 'buy'))
-			time.sleep(.5)
+	
+            
+			
 
 
 

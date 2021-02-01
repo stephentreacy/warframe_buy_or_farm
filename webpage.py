@@ -2,6 +2,7 @@
 
 from flask import Flask
 import warframe_buy_or_farm as wf
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -12,14 +13,18 @@ def hello():
 
 @app.route('/items')
 def items():
-    '''Lists items on webpage'''
-    url = wf.get_tenno_url()
-    items = wf.get_item_list(url)
-    html = ''
+    '''Lists items and orders on webpage'''
+
+    item_orders = {}
+    items = wf.get_item_list(wf.get_tenno_url())
+        
     for item in items:
-        html +='<p>' + item + '</p>'
-        print(item)
-    return html
+        item_dict = wf.get_market_prices(item)
+        if item_dict:
+            item_orders.update(item_dict)
+
+    return render_template('template.html', items=item_orders)
+
 
 if __name__ == '__main__':
     app.run()
