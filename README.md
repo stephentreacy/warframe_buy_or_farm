@@ -5,8 +5,8 @@ Takes selected items from personal https://tenno.zone/planner/ link using Seleni
 
 Uses the https://warframe.market/ API to get current orders for each item.
 
-Prints 4 of the highest buy orders and lowest sell orders to console, will display on a webpage in future.
+Prints 4 of the highest buy orders and lowest sell orders to a webpage using Flask. Will update website to allow inputs. 
 
-Running the python script produces the image below. Items to considering buying from other players highlighted.
+Running the python script webpage.py and going to page in browser produces the image below.
 
-![alt text](https://github.com/stephentreacy/warframe_buy_or_farm/blob/main/images/example.PNG?raw=true)
+![alt text](https://github.com/stephentreacy/warframe_buy_or_farm/blob/main/images/output_webpage.PNG?raw=true)
