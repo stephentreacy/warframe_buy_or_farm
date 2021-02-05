@@ -9,12 +9,11 @@ import pandas as pd
 import time
 
 def get_market_prices(item):
-    '''Create a dictionary for item with the highest 4 buy orders and lowest 4 sell orders'''
+    """Create a dictionary for item with the highest 4 buy orders and lowest 4 sell orders"""
     
     api_url = 'https://api.warframe.market/v1/items/'
     name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
     url_item = api_url + name_url + '/statistics'
-    item_orders = {}
     statistics = {} 
     
     try:
