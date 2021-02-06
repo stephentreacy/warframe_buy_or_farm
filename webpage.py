@@ -28,10 +28,8 @@ def prime_items():
 @app.route('/mods')
 def mods():
     """Lists mods and statistics on webpage"""
-    table = wf.mods_df()
-    print(table)
-    #return wf.mods_df()
-    return render_template('mods_page.html', tables=table)
+
+    return render_template('mods_page.html', tables=wf.mods_df())
 
 
 if __name__ == '__main__':

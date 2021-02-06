@@ -114,15 +114,11 @@ def mods_df():
     df_mod_stats['url'] = df_mod_stats['name'].str.lower().str.replace(' ','_').str.replace('-','_').str.replace("'",'').str.replace('&','and')
     df_mod_stats['url'] = "<a href='https://warframe.market/items/" + df_mod_stats['url'] + "'>" + df_mod_stats['name'] + '</a>'
     html = df_mod_stats.to_html(escape=False)
-    print(html)
     return html
 
 
 if __name__ == '__main__':
-    mods_df()
 
-    
-    '''
     tenno_url = get_tenno_url()
     items = get_item_list(tenno_url)
     print('Items Retrieved')
@@ -133,7 +129,7 @@ if __name__ == '__main__':
             item_orders.update(item_dict)
 
     print(item_orders)
-    '''
+
             
             
 
