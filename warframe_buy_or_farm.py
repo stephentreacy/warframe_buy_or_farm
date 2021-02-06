@@ -1,7 +1,7 @@
-'''Warframe Buy or Farm
+"""Warframe Buy or Farm
 Takes a Tenno Zone link from a file
 Gets the items selected via checkboxes on website
-Shows the price of the items from warframe.market'''
+Shows the price of the items from warframe.market"""
 
 import urllib.request
 import json
@@ -11,15 +11,15 @@ from selenium.webdriver.firefox.options import Options
 import pandas as pd
 
 def get_tenno_url():
-    '''Gets personal https://tenno.zone/planner/ URL from the text file'''
+    """Gets personal https://tenno.zone/planner/ URL from the text file"""
     
-    with open('tenno_url.txt') as url_file:
+    with open(r'C:\Users\Stephen\AppData\Local\Programs\Python\Python39\myscripts\Warframe Buy of Farm\tenno_url.txt') as url_file:
         url = url_file.read()
         
     return url
 
 def get_item_list(url):
-    '''Returns the list of items with selected checkboxes from URL'''
+    """Returns the list of items with selected checkboxes from URL"""
     
     item_names = []
 
@@ -27,7 +27,7 @@ def get_item_list(url):
     print(f'Attempting to open {url} ...')
     opts = Options()
     opts.headless = True
-	
+    
     try:
         browser = webdriver.Firefox(options=opts)
         browser.get(url)
@@ -63,7 +63,7 @@ def get_item_list(url):
     return item_names
 
 def get_market_prices(item):
-    '''Create a dictionary for item with the highest 4 buy orders and lowest 4 sell orders'''
+    """Create a dictionary for item with the highest 4 buy orders, lowest 4 sell orders and URL for item"""
     
     api_url = 'https://api.warframe.market/v1/items/'
     name_url = item.lower().replace(' ','_').replace('-','_').replace("'",'').replace('&','and')
@@ -92,7 +92,7 @@ def get_market_prices(item):
         buying = sub_list(buys_all, 'buy')
         selling = sub_list(sells_all)
         time.sleep(.5)
-        item_orders[item] = [buying,selling]
+        item_orders[item] = [buying,selling,name_url]
         
         return item_orders
 
@@ -110,12 +110,19 @@ def sub_list(orders, order_type='sell'):
         return orders[:4]
 
 def mods_df():
-    df_mod_stats = pd.read_csv("mod_stats.csv") 
-    return df_mod_stats.to_html()
+    df_mod_stats = pd.read_csv("mod_stats.csv")
+    df_mod_stats['url'] = df_mod_stats['name'].str.lower().str.replace(' ','_').str.replace('-','_').str.replace("'",'').str.replace('&','and')
+    df_mod_stats['url'] = "<a href='https://warframe.market/items/" + df_mod_stats['url'] + "'>" + df_mod_stats['name'] + '</a>'
+    html = df_mod_stats.to_html(escape=False)
+    print(html)
+    return html
 
 
 if __name__ == '__main__':
-	
+    mods_df()
+
+    
+    '''
     tenno_url = get_tenno_url()
     items = get_item_list(tenno_url)
     print('Items Retrieved')
@@ -126,10 +133,9 @@ if __name__ == '__main__':
             item_orders.update(item_dict)
 
     print(item_orders)
-
-	
+    '''
             
-			
+            
 
 
 

@@ -1,4 +1,4 @@
-'''Generates a webpage of the items and prices'''
+"""Generates a webpage of the items and prices"""
 
 from flask import Flask
 import warframe_buy_or_farm as wf
@@ -8,12 +8,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    '''Basic test page'''
+    """Basic test page"""
     return 'Hello'
 
 @app.route('/items')
-def items():
-    '''Lists items and orders on webpage'''
+def prime_items():
+    """Lists items and orders on webpage"""
 
     item_orders = {}
     items = wf.get_item_list(wf.get_tenno_url())
@@ -27,10 +27,13 @@ def items():
 
 @app.route('/mods')
 def mods():
-    return wf.mods_df()
-    #return render_template('mods_page.html', items=wf.mods_df())
+    """Lists mods and statistics on webpage"""
+    table = wf.mods_df()
+    print(table)
+    #return wf.mods_df()
+    return render_template('mods_page.html', tables=table)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
     

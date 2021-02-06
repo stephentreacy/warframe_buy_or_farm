@@ -1,15 +1,17 @@
 <html>
     <body>
-		{% for item, orders in items.items(): %}
-        <h1>
-			{{item}}
-		</h1>
-		<p>
-			Buy Orders: {{orders[0]}}		
-		</p>
-		<p>
-			Sell Orders: {{orders[1]}}		
-		</p>
-		{% endfor %}
+        {% for item, orders in items.items(): %}
+        <div>
+            <h1>
+                <a href="https://warframe.market/items/{{orders[2]}}">{{item}}</a>
+            </h1>
+            <p>
+                Buy Orders: {{orders[0]}}		
+            </p>
+            <p>
+                Sell Orders: {{orders[1]}}		
+            </p>
+        </div>
+        {% endfor %}
     </body>
 </html>
