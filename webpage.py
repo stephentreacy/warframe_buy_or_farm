@@ -23,7 +23,12 @@ def items():
         if item_dict:
             item_orders.update(item_dict)
 
-    return render_template('template.html', items=item_orders)
+    return render_template('items_page.html', items=item_orders)
+
+@app.route('/mods')
+def mods():
+    return wf.mods_df()
+    #return render_template('mods_page.html', items=wf.mods_df())
 
 
 if __name__ == '__main__':

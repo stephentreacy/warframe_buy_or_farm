@@ -8,6 +8,7 @@ import json
 import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+import pandas as pd
 
 def get_tenno_url():
     '''Gets personal https://tenno.zone/planner/ URL from the text file'''
@@ -107,6 +108,10 @@ def sub_list(orders, order_type='sell'):
         return orders
     else:
         return orders[:4]
+
+def mods_df():
+    df_mod_stats = pd.read_csv("mod_stats.csv") 
+    return df_mod_stats.to_html()
 
 
 if __name__ == '__main__':
