@@ -13,7 +13,7 @@ import pandas as pd
 def get_tenno_url():
     """Gets personal https://tenno.zone/planner/ URL from the text file"""
     
-    with open(r'C:\Users\Stephen\AppData\Local\Programs\Python\Python39\myscripts\Warframe Buy of Farm\tenno_url.txt') as url_file:
+    with open(r'tenno_url.txt') as url_file:
         url = url_file.read()
         
     return url

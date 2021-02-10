@@ -1,17 +1,27 @@
 <html>
     <body>
-        {% for item, orders in items.items(): %}
         <div>
-            <h1>
-                <a href="https://warframe.market/items/{{orders[2]}}">{{item}}</a>
-            </h1>
-            <p>
-                Buy Orders: {{orders[0]}}		
-            </p>
-            <p>
-                Sell Orders: {{orders[1]}}		
-            </p>
+            <form method="POST">
+                <label for="url_tenno">Tenno Zone Link:</label>
+                <input type="text" name='url_tenno'>
+                <input type="submit" value="Load Items">
+            </form>
         </div>
-        {% endfor %}
+
+        {% if items: %}
+            {% for item, orders in items.items(): %}
+            <div>
+                <h1>
+                    <a href="https://warframe.market/items/{{orders[2]}}">{{item}}</a>
+                </h1>
+                <p>
+                    Buy Orders: {{orders[0]}}		
+                </p>
+                <p>
+                    Sell Orders: {{orders[1]}}		
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
     </body>
 </html>
