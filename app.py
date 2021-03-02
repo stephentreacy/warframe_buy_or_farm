@@ -43,15 +43,14 @@ def prime_items():
 def mods():
     """Lists mods and statistics on webpage"""
     if request.method == 'POST':
-        #Get updated prices and reload
-        pass
+        #Get updated prices
+        wf.create_mod_stats_file()
 
-    else:
-        df_mod_stats = pd.read_csv("mod_stats.csv")
-        df_mod_stats['url'] = df_mod_stats['name'].str.lower().str.replace(' ','_').str.replace('-','_').str.replace("'",'').str.replace('&','and')
-        df_mod_stats['url'] = "<a href='https://warframe.market/items/" + df_mod_stats['url'] + "'>" + df_mod_stats['name'] + '</a>'
-        html = df_mod_stats[['url','datetime','rarity','avg_price','volume']].to_html(escape=False)
-        return render_template('mods_page.html', tables=html)
+    df_mod_stats = pd.read_csv("mod_stats.csv")
+    df_mod_stats['url'] = df_mod_stats['name'].str.lower().str.replace(' ','_').str.replace('-','_').str.replace("'",'').str.replace('&','and')
+    df_mod_stats['url'] = "<a href='https://warframe.market/items/" + df_mod_stats['url'] + "'>" + df_mod_stats['name'] + '</a>'
+    html = df_mod_stats[['url','datetime','rarity','avg_price','volume']].to_html(escape=False)
+    return render_template('mods_page.html', tables=html)
 
 
 if __name__ == '__main__':
