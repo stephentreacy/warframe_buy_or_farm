@@ -8,9 +8,9 @@ import time
 app = Flask(__name__)
 
 @app.route('/')
-def hello():
+def home():
     """Basic test page"""
-    return 'Hello'
+    return render_template('base.html')
 
 @app.route('/items', methods=['GET', 'POST'])
 def prime_items():
@@ -52,7 +52,5 @@ def mods():
     html = df_mod_stats[['url','datetime','rarity','avg_price','volume']].to_html(escape=False)
     return render_template('mods_page.html', tables=html)
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-    
